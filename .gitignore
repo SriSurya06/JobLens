@@ -1,0 +1,18 @@
+# Dependencies and generated build output
+node_modules/
+.cache/
+dist/
+build/
+
+# Local environment files; keep safe templates in Git
+.env
+.env.*
+!.env.example
+!.env.docker.example
+
+# Uploaded resumes may contain personal information
+/CCPDMS_FINAL/uploads/resumes/*
+!/CCPDMS_FINAL/uploads/resumes/.gitkeep
+
+# Operating system files
+.DS_Store

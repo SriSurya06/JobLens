@@ -1,0 +1,48 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: joblens-mongo
+    restart: unless-stopped
+    volumes:
+      - mongo_data:/data/db
+    ports:
+      - "27017:27017"
+
+  backend:
+    build:
+      context: ./CCPDMS_FINAL
+    container_name: joblens-backend
+    restart: unless-stopped
+    env_file:
+      - ./CCPDMS_FINAL/.env
+    environment:
+      # Overrides so the backend always talks to the mongo container
+      # and accepts requests from the dockerized frontend, regardless
+      # of what's set in .env
+      MONGO_URI: mongodb://mongo:27017/joblens
+      CLIENT_URL: http://localhost:3000
+    depends_on:
+      - mongo
+    volumes:
+      - uploads_data:/app/uploads
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: ./joblens-frontend
+      args:
+        REACT_APP_API_URL: /api
+        REACT_APP_CLAUDE_API_KEY: ${REACT_APP_CLAUDE_API_KEY:-}
+    container_name: joblens-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  mongo_data:
+  uploads_data:
